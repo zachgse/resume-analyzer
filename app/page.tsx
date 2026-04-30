@@ -4,6 +4,7 @@ import { formatNewMessage } from "./utils/helper";
 import { SendHorizontal } from "lucide-react";
 import { Comment } from "react-loader-spinner";
 import clsx from "clsx";
+import ReactMarkdown from "react-markdown";
 
 type Conversation = {
   role: "user" | "model"
@@ -52,7 +53,15 @@ export default function Home() {
                                 c.role == "user" ? "justify-end" : "justify-start"
           )}>
             <div className="md:w-3/5 w-4/5 h-fit border border-gray-300 rounded-lg p-4">
-              {c.parts[0].text}
+              {c.role === "model" ? (
+                <div className="prose max-w-none">
+                  <ReactMarkdown>
+                    {c.parts[0].text}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p>{c.parts[0].text}</p>
+              )}
             </div>
           </div>
           ))}
