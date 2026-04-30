@@ -56,6 +56,20 @@ export default function Home() {
             </div>
           </div>
           ))}
+          {loading && (
+            <div className="flex justify-start">
+              <Comment
+                visible={true}
+                height="60"
+                width="60"
+                ariaLabel="comment-loading"
+                wrapperStyle={{}}
+                wrapperClass="comment-wrapper"
+                color="black"
+                backgroundColor="#e1e1e1"
+                />
+            </div>
+          )}
         </div>
       ) : (
         <div className="lg:w-3/5 md:w-4/5 w-full flex flex-1 items-center justify-center">
