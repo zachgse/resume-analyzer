@@ -1,53 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 const GEMINI_API_KEY=process.env.GOOGLE_GEMINI_API_KEY
 
 export async function POST(request:NextRequest){
     const body = await request.json();
     const message = await body.message;
-    console.log("message is ", message);
     const history = await body.history;
-    console.log("history is ", history);
-    // return NextResponse.json({
-    //     message: data ? "There is data" : "there is no"
-    // }, {status:200});
-    // return NextResponse.json({
-    //     data
-    // },{status:200}); 
-    // GET CHAT HISTORY FROM FRONTEND (APPEND HAPPENS IN THE FRONTEND USESTATE)
+
+    const schema = {
+        type: Type.OBJECT,
+        properties: {
+            thought: {
+                type: Type.STRING,
+                description: "Detailed internal reasoning and step-by-step logic." //specify about resume
+            },
+            answer: {
+                type: Type.STRING, 
+                description: "The AI's actual conversational response to the user." //remove this
+            },
+            subject: {
+                type: Type.STRING,
+                description: "Sending test api connectivity to gemini" //specify about resume
+            },
+            topic: {
+                type: Type.STRING,
+                description: "Test api" //specify about resume
+            },
+            content: {
+                type: Type.STRING,
+                description: message
+            },
+        },
+        required: ["thought","answer","subject","topic","content"]
+    }
+    
     const ai = new GoogleGenAI({
         apiKey: GEMINI_API_KEY,
     });
+
     const chat = ai.chats.create({
         model:"gemini-3-flash-preview",
-        history
-    })
-    const response1 = await chat.sendMessage({
+        history,
+        config: {
+            responseMimeType: "application/json",
+            responseJsonSchema: schema,
+            thinkingConfig: {
+                includeThoughts: true,
+            }
+        } 
+    });
+
+    const response = await chat.sendMessage({
         message
     });
-    console.log("reply is: ", response1.text);
-    // console.log("chat history is: ", chat.getHistory())
+
+    console.log("response is : ", response)
+    console.log("response text is : ", response.text)
+
     return NextResponse.json({
-        data:response1.text
+        data:response.text
     },{
         status:200
     })
-
-
-
-    // const model = genAI.
-    // const response = await genAI.chats
-    // const response = await genAI.models.generateContent({
-    //     model:"gemini-3-flash",
-    //     contents:
-    // });
-    // const body = await request.json();
-    // const input = body.test;
-
-    // return NextResponse.json({
-    //     message: `Your input is ${input}`
-    // },{
-    //     status:200
-    // });
 }
