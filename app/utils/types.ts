@@ -1,19 +1,14 @@
 export type InitialMessage = {
-    type: "initial"
+    message?: string
     title: string
-    location: string
     jobDescription: string
     resume: File
 }
 
 export type ContinuousMessage = {
-    type: "continuous"
-    content: string 
+  content: string 
+  // history: Conversation[]
 }
-
-export type Payload = 
-  | InitialMessage
-  | ContinuousMessage
 
 export type NewMessage = {
   role: "user" | "model"

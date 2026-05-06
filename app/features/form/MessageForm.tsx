@@ -4,22 +4,25 @@ import { SendHorizontal } from "lucide-react";
 import { Comment } from "react-loader-spinner";
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
-import { ContinuousMessage, Conversation, Payload } from "@/app/utils/types";
+import { ContinuousMessage, Conversation } from "@/app/utils/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { suceedingMessage } from "@/app/utils/validation";
+import { succeedingMessage } from "@/app/utils/schema";
 import React from "react";
+import { formatNewMessage } from "@/app/utils/helper";
 
 type MessageFormProps = {
   conversation: Conversation[]
+  setConversation: React.Dispatch<React.SetStateAction<Conversation[]>>
+  startTransition: React.TransitionStartFunction
   isPending: boolean
-  onSubmit: (payload:Payload) => void
 }
 
 const MessageForm = ({
   conversation,
-  isPending,
-  onSubmit
+  setConversation,
+  startTransition,
+  isPending
 }:MessageFormProps) => {
   const {
     reset,
@@ -27,15 +30,29 @@ const MessageForm = ({
     handleSubmit,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(suceedingMessage)
+    resolver: zodResolver(succeedingMessage)
   });
 
   const submitHandler = (data:ContinuousMessage) => {
-    onSubmit({
-      type:"continuous",
-      content: data.content
-    });
     reset();
+    const userMessage = formatNewMessage({role:"user",text:data.content});
+    const history = [...conversation,userMessage];
+    const payload = {
+      message:data.content,
+      history
+    } 
+    try {
+      startTransition(async() => {
+        const response = await fetch("/api/analyze", {
+            method:"POST",
+            body: JSON.stringify(payload),
+        }).then(r => r.json());
+        const modelMessage = formatNewMessage({role:"model",text:response.data})
+        setConversation(prev=>[...prev,modelMessage]);
+      })
+    } catch (error) {
+       console.error(error)
+    }
   }
 
   const handleKeyDown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -85,7 +102,6 @@ const MessageForm = ({
         <div className="lg:w-3/5 md:w-4/5 w-full mx-auto">
           <form onSubmit={handleSubmit(submitHandler)}
             className="relative">
-            <input type="hidden" value="continuous" {...register("type")}/>
             <textarea {...register("content")} onKeyDown={handleKeyDown}
                     className={clsx("w-full border  rounded-lg h-40 py-4 ps-4 pe-10",
                       errors.content ? "border-red-500 hover:border-red-500 focus:outline-red-500"

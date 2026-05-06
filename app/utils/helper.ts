@@ -1,13 +1,18 @@
-import { NewMessage,Payload } from "./types"
+import { extractText } from "unpdf"
+import { NewMessage } from "./types"
 
-export const formatInitialMessage = (data:Payload) => {
-    if (data.type === "initial") {
-        return `Update my resume for the role of **${data.title}** 
+export const formatInitialMessage = ({
+    title,
+    jobDescription
+}:{
+    title:string,
+    jobDescription:string
+}):string => {
+        return `Update my resume for the role of **${title}** 
 
 with a **job description of:** 
 
-${data.jobDescription}`
-    }
+${jobDescription}`
 }
 
 export const formatNewMessage = ({role,text}:NewMessage) => {
@@ -17,4 +22,11 @@ export const formatNewMessage = ({role,text}:NewMessage) => {
             text
         }]
     }
+}
+
+export const extractTextFromResume = async(file:File):Promise<string> => {
+    const buffer = new Uint8Array(await file.arrayBuffer());
+    const result = await extractText(buffer);
+    if (typeof result === "string") return result;
+    return result.text.join("\n");
 }

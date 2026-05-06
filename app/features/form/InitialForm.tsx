@@ -4,16 +4,19 @@ import React from "react";
 import clsx from "clsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { initialMessage } from "@/app/utils/validation";
+import { initialMessage } from "@/app/utils/schema";
 import { File } from "lucide-react";
-import { InitialMessage, Payload } from "@/app/utils/types";
+import { Conversation, InitialMessage } from "@/app/utils/types";
+import { formatInitialMessage, formatNewMessage } from "@/app/utils/helper";
 
 type InitialFormProps = {
-    onSubmit: (payload:Payload) => void
+    setConversation: React.Dispatch<React.SetStateAction<Conversation[]>>
+    startTransition: React.TransitionStartFunction
 }
 
 const InitialForm = ({
-    onSubmit
+    setConversation,
+    startTransition
 }:InitialFormProps) => {
     const { 
         register,
@@ -41,20 +44,32 @@ const InitialForm = ({
     }
 
     const submitHandler = (data:InitialMessage) => {
-        onSubmit({
-            type:"initial",
-            title:data.title,
-            location:data.location,
-            jobDescription:data.jobDescription,
-            resume:data.resume
-        }) 
+        const initialMessage = formatInitialMessage({  // for backend to be sent to gemini
+                                    title:data.title,
+                                    jobDescription:data.jobDescription});
+        const userMessage = formatNewMessage({ role:"user",text:initialMessage }) // for ui display 
+        setConversation(prev => [...prev,userMessage]); // updating local state
+        startTransition(async() => {
+            const formData = new FormData();
+            formData.append("message",initialMessage);
+            formData.append("resume",data.resume);
+            try {
+                const response = await fetch("/api/analyze", {
+                    method:"POST",
+                    body: formData,
+                }).then(r => r.json());
+                const modelMessage = formatNewMessage({role:"model",text:response.data})
+                setConversation(prev=>[...prev,modelMessage]);
+            } catch (error) {
+                console.error(error);
+            }
+        })
     }
     
     return (
         <form onSubmit={handleSubmit(submitHandler)} 
             className="lg:w-3/5 md:w-4/5 w-full grid md:grid-cols-2 grid-cols-1 md:gap-12 gap-4 md:p-0 p-4">
             <div className="flex flex-col space-y-4">
-                <input type="hidden" value="initial" {...register("type")}/>
                 <div className="w-full flex items-start gap-4">
                     <div className="w-1/5">
                         <p className="break-words">Job Title</p>
@@ -70,7 +85,7 @@ const InitialForm = ({
                     </div>
                 </div>
                 
-                <div className="w-full flex items-start gap-4">
+                {/* <div className="w-full flex items-start gap-4">
                     <div className="w-1/5">
                         <p className="break-words">Location</p>
                     </div>
@@ -83,7 +98,9 @@ const InitialForm = ({
                             )}/>
                         <p className="text-xs text-red-500 mt-1">{errors.location?.message}</p>
                     </div>
-                </div>
+                </div> */}
+
+            
                 <div className="w-full flex items-start gap-4">
                     <div className="w-1/5">
                         <p className="break-words">Job Description</p>
