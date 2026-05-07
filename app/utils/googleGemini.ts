@@ -1,52 +1,76 @@
-import { GoogleGenAI } from "@google/genai";
-import { NextResponse } from "next/server";
-import z from "zod";
-import { modelAnswer } from "./schema";
-import { Conversation } from "./types";
+import {
+  GoogleGenAI,
+  ThinkingLevel,
+  Type,
+} from '@google/genai';
+import { Conversation } from './types';
 
 const GEMINI_API_KEY=process.env.GOOGLE_GEMINI_API_KEY
 
-export const gemini = async({
+export async function gemini({
+  message,
+  history
+}:{
+  message: string,
+  history: Conversation[]
+}) {
+  const ai = new GoogleGenAI({
+    apiKey: GEMINI_API_KEY,
+  });
+  const model = ai.chats.create({
+    model:'gemini-3-flash-preview',
     history,
-    message
-}: {
-    history: Conversation[],
-    message: string
-}) => {
-    try {
-        const ai = new GoogleGenAI({
-            apiKey: GEMINI_API_KEY,
-        });
+    config: {
+    thinkingConfig: {
+      thinkingLevel: ThinkingLevel.HIGH,
+      includeThoughts: true,
+    },
+    responseMimeType: 'application/json',
+    responseSchema: {
+      type: Type.OBJECT,
+      required: ["message", "topic"],
+      properties: {
+        message: {
+          type: Type.STRING,
+          description: "Conversational UI friendly message that gets rendered in the frontend explaining to the user what changed (e.g., 'I updated your experience section to be more results-oriented and metric based.')"
+        },
+        topic: {
+          type: Type.STRING,
+          description: "brief description of what you and the user are talking about (e.g., Summary, Skills, Work History)"
+        },
+        resume_contents: {
+          type: Type.STRING,
+          description: "ONLY include this DURING the first user message based on history sent alongside with each request. The full, revised text of the resume in ATS format. This will be processed by the backend into a Word document and will not be shown directly in the chat window."
+        },
+      },
+    },
+    systemInstruction: [
+        {
+          text: `You are a professional Hiring manager. The users will inquire and send their current resume (once as an initial message alongside with the job details they are seeking). The resume will be sent in text form via pdf to text converter. With that information, I want you to compare their current resume and align it with the job details they have sent. Upon receiving those information, I want you to generate an ATS format resume (via text) and extract all important things from their resume and add keywords,metrics, and special skillsets required for the job that they are seeking.  Also allow the user for further clarifications and revisions along the conversation history. Utilize third party resources to fully give a corporate standard generated resume (e.g. linkedin, jobstreet etc)
 
-        const chat = ai.chats.create({
-            model:"gemini-2.5-flash",
-            history,
-            config: {
-                systemInstruction: "You are a professional HR manager in all fields utilizing ATS format in reviewing resumes." + 
-                                    "Analyze user inputs and instructions carefully for brief and clear interaction with the user. " + 
-                                    "If the role is in professional level, kindly use and utilize all job postings resources in the internet " + 
-                                    "(e.g., https://linkedin.com/, https://uk.indeed.com/).",
-                responseMimeType: "application/json",
-                responseJsonSchema: z.toJSONSchema(modelAnswer),
-                thinkingConfig: {
-                    includeThoughts: true,
-                }
-            } 
-        });
+For the output, I expect 3 json output:
+1. topic(required) - brief description of what you and the user are talking about (e.g., Summary, Skills, Work History)
 
-        const response = await chat.sendMessage({message});
-        console.log("response is ", response);
-        return NextResponse.json({data:response},{status:200});
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json(
-            {
-                error: "Google gemini is not available",
-                details: error instanceof Error ? error.message : "Google gemini is out of service"
-            },
-            {
-                status: 500
-            }
-        )
+2. message (required) - Conversational UI friendly message that gets rendered in the frontend explaining to the user what changed (e.g., 'I updated your experience section to be more results-oriented and metric based.').
+
+3. resume_contents - ONLY include this DURING the first user message based on history sent alongside with each request. The full, revised text of the resume in ATS format. This will be processed by the backend into a Word document and will not be shown directly in the chat window.`,
+        }
+    ],
     }
+  })
+
+  const response = await model.sendMessage({ message });
+
+  console.log("response text in gemini: ", response.text);
+
+  const parsed = JSON.parse(response.text as string);
+  console.log("response parsed in gemini: ", parsed);
+  console.log("parsed message in gemini: ", parsed.message);
+  console.log("parsed topic in gemini: ", parsed.topic);
+  console.log("parsed res content in gemini: ", parsed.resume_contents);
+  return parsed;
 }
+
+
+
+

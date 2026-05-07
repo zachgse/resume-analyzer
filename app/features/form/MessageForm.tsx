@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { ContinuousMessage, Conversation } from "@/app/utils/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { succeedingMessage } from "@/app/utils/schema";
+import { succeedingFrontend } from "@/app/utils/schema";
 import React from "react";
 import { formatNewMessage } from "@/app/utils/helper";
 
@@ -30,20 +30,21 @@ const MessageForm = ({
     handleSubmit,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(succeedingMessage)
+    resolver: zodResolver(succeedingFrontend)
   });
 
   const submitHandler = (data:ContinuousMessage) => {
     reset();
     const userMessage = formatNewMessage({role:"user",text:data.content});
     const history = [...conversation,userMessage];
+    setConversation(prev=>[...prev,userMessage]);
     const payload = {
       message:data.content,
       history
     } 
     try {
       startTransition(async() => {
-        const response = await fetch("/api/analyze", {
+        const response = await fetch("/api/analyze/continuous", {
             method:"POST",
             body: JSON.stringify(payload),
         }).then(r => r.json());

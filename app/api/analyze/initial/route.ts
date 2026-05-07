@@ -1,12 +1,12 @@
 import { gemini } from "@/app/utils/googleGemini";
 import { extractTextFromResume, formatNewMessage } from "@/app/utils/helper";
-import { initialMessage } from "@/app/utils/schema";
+import { initialBackend } from "@/app/utils/schema";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request:NextRequest) {
     try {
         const formData = await request.formData();
-        const parsedData = initialMessage.safeParse({
+        const parsedData = initialBackend.safeParse({
             message: formData.get("message"),
             resume: formData.get("resume")
         });
@@ -19,8 +19,15 @@ export async function POST(request:NextRequest) {
         const history = [formatNewMessage({role:"user",text:message})];
         const extractedResume = await extractTextFromResume(resume);
         const formattedMessage = `${message} **My current resume is:** ${extractedResume?.slice(0, 8000)}`; 
+        // return NextResponse.json({data:"hello"},{status:200});
+        const response = gemini({history,message:formattedMessage});
 
-        gemini({history,message:formattedMessage});
+        console.log("response in initial route: ", response);
+        return NextResponse.json({
+            data: "Hello"
+        }, {
+            status: 200
+        });
     } catch (error) {
         console.error(error);
         return NextResponse.json(

@@ -4,7 +4,7 @@ import React from "react";
 import clsx from "clsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { initialMessage } from "@/app/utils/schema";
+import { initialFrontend } from "@/app/utils/schema";
 import { File } from "lucide-react";
 import { Conversation, InitialMessage } from "@/app/utils/types";
 import { formatInitialMessage, formatNewMessage } from "@/app/utils/helper";
@@ -24,7 +24,7 @@ const InitialForm = ({
         setValue,
         formState: { errors }
     } = useForm({
-        resolver: zodResolver(initialMessage)
+        resolver: zodResolver(initialFrontend)
     })
 
     const [dragging,setDragging] = React.useState<boolean>(false);
@@ -44,6 +44,7 @@ const InitialForm = ({
     }
 
     const submitHandler = (data:InitialMessage) => {
+        console.log("test`");
         const initialMessage = formatInitialMessage({  // for backend to be sent to gemini
                                     title:data.title,
                                     jobDescription:data.jobDescription});
@@ -54,7 +55,7 @@ const InitialForm = ({
             formData.append("message",initialMessage);
             formData.append("resume",data.resume);
             try {
-                const response = await fetch("/api/analyze", {
+                const response = await fetch("/api/analyze/initial", {
                     method:"POST",
                     body: formData,
                 }).then(r => r.json());
