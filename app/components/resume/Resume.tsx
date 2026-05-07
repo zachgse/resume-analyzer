@@ -1,59 +1,28 @@
-import { extractText } from "unpdf"
-import { NewMessage } from "./types"
-
-export const formatInitialMessage = ({
-    title,
-    jobDescription
-}:{
-    title:string,
-    jobDescription:string
-}):string => {
-        return `Update my resume for the role of **${title}** 
-
-with a **job description of:** 
-
-${jobDescription}`
-}
-
-export const formatNewMessage = ({role,text}:NewMessage) => {
-    return {
-        role,
-        parts:[{
-            text
-        }]
-    }
-}
-
-export const extractTextFromResume = async(file:File):Promise<string> => {
-    const buffer = new Uint8Array(await file.arrayBuffer());
-    const result = await extractText(buffer);
-    if (typeof result === "string") return result;
-    return result.text.join("\n");
-}
-
-export const generateResume = () => {
-    return `
-        <div class="bg-white text-black text-sm resume-text flex flex-col gap-2">
-            <section class="flex flex-col items-center gap-2"> 
-                <p class="text-3xl font-bold">Zach Estrella</p>
-                <div class="flex justify-center gap-1">
+export default function Resume(){
+    return (
+        <div className="bg-white text-black text-sm resume-text flex flex-col gap-6 p-16">
+            {/* personal information */}
+            <section className="flex flex-col items-center gap-2"> 
+                <p className="text-3xl font-bold">Zach Estrella</p>
+                <div className="flex justify-center gap-1">
                     <p>Manila</p>
                     <p>|</p>
                     <p>0976-618-3244</p>
                     <p>|</p>
-                    <a class="text-blue-500 underline" href="mailto:zachgabriel.estrella@gmail.com">
+                    <a className="text-blue-500 underline" href="mailto:zachgabriel.estrella@gmail.com">
                         zachgabriel.estrella@gmail.com
                     </a>
                     <p>|</p>
-                    <a class="text-blue-500 underline" href="https://zachgse.vercel.app">
+                    <a className="text-blue-500 underline" href="https://zachgse.vercel.app">
                         https://zachgse.vercel.app
                     </a>
                 </div>
             </section>
-            <section class="flex flex-col gap-2">
-                <p class="text-lg text-uppercase font-semibold">Summary</p>
-                <hr class="border border-black"/>
-                <p class="text-justify text-sm/6">
+            {/* Summarry */}
+            <section className="flex flex-col gap-2">
+                <p className="text-lg text-uppercase font-semibold">Summary</p>
+                <hr />
+                <p className="text-justify text-sm/6">
                     Full-Stack Web Developer with a strong backend focus using PHP (Laravel), experienced in building scalable,
                     maintainable applications. Proficient in designing RESTful APIs, implementing secure authentication, and managing
                     relational databases such as MySQL. Capable of delivering end-to-end features across the stack and translating business
@@ -62,16 +31,17 @@ export const generateResume = () => {
                     teams.
                 </p>
             </section>
-            <section class="flex flex-col gap-2">
-                <p class="text-lg text-uppercase font-semibold">Experience</p>
-                <hr class="border border-black"/>
-                <div class="flex flex-col gap-1">
-                    <div class="flex font-semibold">
-                        <p class=" me-auto">Ziaplex Inc.</p>
+            {/* Experience */}
+            <section className="flex flex-col gap-2">
+                <p className="text-lg text-uppercase font-semibold">Experience</p>
+                <hr />
+                <div className="flex flex-col gap-1">
+                    <div className="flex font-semibold">
+                        <p className=" me-auto">Ziaplex Inc.</p>
                         <p>Aug 2022 - Oct 2025</p>
                     </div>
                     <p>Web Developer</p>
-                    <ul class="list-disc pl-6 space-y-1"> 
+                    <ul className="list-disc pl-6 space-y-1"> 
                         <li>
                             Led end-to-end development of 5+ Laravel-based web and back-office applications and contributed to 10+
                             internal systems across finance, logistics, and healthcare, supporting 100+ daily active users.
@@ -94,74 +64,80 @@ export const generateResume = () => {
                     </ul>
                 </div>
             </section>
-            <section class="flex flex-col gap-2">
-                <p class="text-lg text-uppercase font-semibold">Skills</p>
-                <hr class="border border-black"/>
-                <div class="flex flex-col gap-1">
-                    <div class="flex gap-1">
-                        <p class="font-semibold">Backend & Programming:</p>
+            {/* Skills */}
+            <section className="flex flex-col gap-2">
+                <p className="text-lg text-uppercase font-semibold">Skills</p>
+                <hr /> 
+                <div className="flex flex-col gap-1">
+                    <div className="flex gap-1">
+                        <p className="font-semibold">Backend & Programming:</p>
                         <p>PHP, Java, Python, JavaScript</p>
                     </div>
-                    <div class="flex gap-1">
-                        <p class="font-semibold">Databases:</p>
+                    <div className="flex gap-1">
+                        <p className="font-semibold">Databases:</p>
                         <p>MySQL</p>
                     </div>
-                    <div class="flex gap-1">
-                        <p class="font-semibold">Frontend Development:</p>
+                    <div className="flex gap-1">
+                        <p className="font-semibold">Frontend Development:</p>
                         <p>HTML5, CSS3 (Bootstrap, Tailwind), ReactJS</p>
                     </div>
-                    <div class="flex gap-1">
-                        <p class="font-semibold">APIs & Integration:</p>
+                    <div className="flex gap-1">
+                        <p className="font-semibold">APIs & Integration:</p>
                         <p>RESTful APIs</p>
                     </div>
-                    <div class="flex gap-1">
-                        <p class="font-semibold">Tools & Platforms:</p>
+                    <div className="flex gap-1">
+                        <p className="font-semibold">Tools & Platforms:</p>
                         <p>Git (GitHub, Bitbucket), JIRA, Postman</p>
                     </div>
                 </div>
+
             </section>
-            <section class="flex flex-col gap-2">
-                <p class="text-lg text-uppercase font-semibold">Education</p>
-                <hr class="border border-black"/>
-                <div class="flex flex-col gap-1">
-                    <div class="flex font-semibold">
-                        <p class=" me-auto">De La Salle – College of Saint Benilde</p>
+            {/* Education */}
+            <section className="flex flex-col gap-2">
+                <p className="text-lg text-uppercase font-semibold">Education</p>
+                <hr />
+                <div className="flex flex-col gap-1">
+                    <div className="flex font-semibold">
+                        <p className=" me-auto">De La Salle – College of Saint Benilde</p>
                         <p>Oct 2022</p>
                     </div>
                     <p>Web Developer</p>
                 </div>
             </section>
-            <section class="flex flex-col gap-2">
-                <p class="text-lg text-uppercase font-semibold">Licenses and Certifications</p>
-                <hr class="border border-black"/>
-                <div class="flex flex-col gap-1">
-                    <div class="flex font-semibold">
-                        <p class=" me-auto">AWS Practicioner</p>
+            {/* Licenses */}
+            <section className="flex flex-col gap-2">
+                <p className="text-lg text-uppercase font-semibold">Licenses and Certifications</p>
+                <hr />
+                <div className="flex flex-col gap-1">
+                    <div className="flex font-semibold">
+                        <p className=" me-auto">AWS Practicioner</p>
                         <p>Oct 2025</p>
                     </div>
                     <p>Amazon Web Services</p>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <div class="flex font-semibold">
-                        <p class=" me-auto">SQL</p>
+                <div className="flex flex-col gap-1">
+                    <div className="flex font-semibold">
+                        <p className=" me-auto">SQL</p>
                         <p>Aug 2025</p>
                     </div>
                     <p>Oracle</p>
                 </div>
+            
             </section>
-            <section class="flex flex-col gap-2">
-                <p class="text-lg text-uppercase font-semibold">Projects</p>
-                <hr class="border border-black"/>
-                <div class="flex flex-col gap-1">
-                    <div class="flex flex-col">
-                        <p class="font-semibold">1. Sublime</p>
-                        <div class="flex gap-1">
-                            <p class="font-semibold">Tech stack:</p>
+            {/* Projects */}
+            <section className="flex flex-col gap-2">
+                <p className="text-lg text-uppercase font-semibold">Projects</p>
+                <hr />
+                <div className="flex flex-col gap-1">
+                    <div className="flex flex-col">
+                        <p className="font-semibold">1. Sublime</p>
+                        <div className="flex gap-1">
+                            <p className="font-semibold">Tech stack:</p>
                             <p>HTML,</p>
                             <p>Tailwind CSS,</p>
                             <p>JavaScript</p>
                         </div>
-                        <p class="text-justify">
+                        <p className="text-justify">
                             A modern web application for Sublime Cafe, built with Next.js, Supabase, and Tailwind CSS. It features a 
                             scalable CMS architecture for managing products, menu items, and content, along with secure authentication 
                             and database handling powered by Supabase. The platform also includes S3-like storage for media uploads and 
@@ -169,15 +145,15 @@ export const generateResume = () => {
                             for both customers and administrators.
                         </p>
                     </div>
-                    <div class="flex flex-col">
-                        <p class="font-semibold">2. E-commerce</p>
-                        <div class="flex gap-1">
-                            <p class="font-semibold">Tech stack:</p>
+                    <div className="flex flex-col">
+                        <p className="font-semibold">2. E-commerce</p>
+                        <div className="flex gap-1">
+                            <p className="font-semibold">Tech stack:</p>
                             <p>HTML,</p>
                             <p>Tailwind CSS,</p>
                             <p>JavaScript</p>
                         </div>
-                        <p class="text-justify">
+                        <p className="text-justify">
                             Engineered a high-performance e-commerce platform with role-based access control (RBAC) and token-based 
                             authentication (Laravel Sanctum) for secure user management. Implemented a repository-service architecture 
                             with Redis caching (Docker) to optimize backend performance. Developed checkout session generation, 
@@ -190,5 +166,5 @@ export const generateResume = () => {
                 </div>
             </section>
         </div>
-    `
+    )
 }
