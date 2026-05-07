@@ -1,4 +1,3 @@
-
 import { generateResume } from "@/app/utils/helper";
 import Chromium from "@sparticuz/chromium";
 import { NextRequest, NextResponse } from "next/server";
