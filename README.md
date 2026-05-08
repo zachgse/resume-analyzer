@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resume Analyzer
 
-## Getting Started
+A simple AI-powered resume analyzer built with free Google Gemini models.
 
-First, run the development server:
+Users can upload their current resume, provide a target job title and job description, then receive:
+- AI-generated resume feedback
+- ATS-friendly resume improvements
+- A generated PDF resume based on AI revisions
+- Continued conversational resume assistance
+
+---
+
+# Features
+
+- Upload existing resume PDF
+- Extract PDF text on the backend
+- Analyze resumes using Google Gemini
+- Generate ATS-friendly resume suggestions
+- Create dynamic PDF resumes from React components
+- Interactive AI chat for further resume revisions
+- Simple conversational UI
+
+---
+
+# How It Works
+
+## 1. User Input
+
+The user provides:
+- Job title
+- Job description
+- Current resume/CV (PDF)
+
+---
+
+## 2. Resume Processing
+
+The backend:
+- Extracts text from the uploaded PDF
+- Combines the extracted content with a custom AI prompt
+- Sends structured instructions to Google Gemini
+
+---
+
+## 3. AI Response + PDF Generation
+
+The app:
+- Receives structured AI-generated resume content
+- Generates a revised ATS-friendly resume
+- Builds a downloadable PDF from dynamic React components
+- Displays the AI response in the chat UI
+
+---
+
+## 4. Continued Conversation
+
+After initial generation:
+- Users can continue chatting with the AI
+- Ask for revisions or resume advice
+- Discuss improvements interactively
+
+PDF generation only happens during the initial analysis request.
+
+---
+
+# Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Google Gemini API
+- Puppeteer
+- React Hook Form
+- Zod
+
+---
+
+# Packages Used
+
+## Main Dependencies
+
+- `@google/genai`
+- `@hookform/resolvers`
+- `@sparticuz/chromium`
+- `clsx`
+- `lucide-react`
+- `next`
+- `puppeteer-core`
+- `react`
+- `react-dom`
+- `react-hook-form`
+- `react-loader-spinner`
+- `react-markdown`
+- `unpdf`
+- `zod`
+
+## Development Dependencies
+
+- `@tailwindcss/postcss`
+- `@types/node`
+- `@types/react`
+- `@types/react-dom`
+- `eslint`
+- `eslint-config-next`
+- `puppeteer`
+- `tailwindcss`
+- `typescript`
+
+---
+
+# Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone <your-repository>
+cd resume-analyzer
+npm install
