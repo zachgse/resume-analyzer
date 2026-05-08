@@ -7,16 +7,20 @@ import MessageForm from "./form/MessageForm";
 const HomeContent = () => {
     const [file,setFile] = React.useState<string>();
     const [conversation,setConversation] = React.useState<Conversation[]>([]);
-    // add error state
+    const [isError,setIsError] = React.useState<boolean>(false);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center">
             {conversation.length == 0 
                 ? <InitialForm setFile={setFile}
-                    setConversation={setConversation}/>
+                    setConversation={setConversation}
+                    isError={isError}
+                    setIsError={setIsError}/>
                 : <MessageForm file={file}
                                 conversation={conversation}
-                                setConversation={setConversation}/>}
+                                setConversation={setConversation}
+                                isError={isError}
+                                setIsError={setIsError}/>}
         </div>
     )
 }

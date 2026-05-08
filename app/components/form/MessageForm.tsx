@@ -10,17 +10,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { succeedingFrontend } from "@/app/utils/schema";
 import React, { useTransition } from "react";
 import { formatNewMessage } from "@/app/utils/helper";
+import Error from "../Error";
 
 type MessageFormProps = {
   file: string | undefined
   conversation: Conversation[]
   setConversation: React.Dispatch<React.SetStateAction<Conversation[]>>
+  isError: boolean
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const MessageForm = ({
   file,
   conversation,
-  setConversation
+  setConversation,
+  isError,
+  setIsError
 }:MessageFormProps) => {
   const {
     reset,
@@ -32,6 +37,13 @@ const MessageForm = ({
   });
 
   const [isPending,startTransition] = useTransition();
+  const bottomRef = React.useRef<HTMLDivElement|null>(null)
+  
+  React.useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+        behavior: "smooth"
+    });
+  },[conversation,isPending])
 
   const submitHandler = (data:ContinuousMessage) => {
     reset();
@@ -48,6 +60,9 @@ const MessageForm = ({
             method:"POST",
             body: JSON.stringify(payload),
         }).then(r => r.json());
+        if (!response.ok) {
+            setIsError(true);
+        }
         const modelMessage = formatNewMessage({role:"model",text:response.message})
         setConversation(prev=>[...prev,modelMessage]);
       })
@@ -62,6 +77,8 @@ const MessageForm = ({
       handleSubmit(submitHandler)();
     }
   }
+
+  if (isError) return <Error/>
 
   return (
     <>
@@ -98,7 +115,9 @@ const MessageForm = ({
                 />
             </div>
           )}
+          <div ref={bottomRef}/>
         </div>
+        
       ) : (
         <div className="lg:w-3/5 md:w-4/5 w-full flex flex-1 items-center justify-center">
           <p className="text-gray-500">No conversation yet. Send your first message</p>

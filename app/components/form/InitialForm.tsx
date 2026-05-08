@@ -8,15 +8,21 @@ import { initialFrontend } from "@/app/utils/schema";
 import { File } from "lucide-react";
 import { Conversation, InitialMessage } from "@/app/utils/types";
 import { formatInitialMessage, formatNewMessage } from "@/app/utils/helper";
+import Error from "../Error";
+import Loading from "../Loading";
 
 type InitialFormProps = {
     setFile: React.Dispatch<React.SetStateAction<string|undefined>>
     setConversation: React.Dispatch<React.SetStateAction<Conversation[]>>
+    isError: boolean
+    setIsError: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const InitialForm = ({
     setFile,
     setConversation,
+    isError,
+    setIsError
 }:InitialFormProps) => {
     const { 
         register,
@@ -58,13 +64,18 @@ const InitialForm = ({
                     method:"POST",
                     body: formData,
                 }).then(r => r.json());
-                console.log("ai response: ", response);
+                if (!response.ok) {
+                    setIsError(true);
+                }
                 const modelMessage = formatNewMessage({role:"model",text:response.message})
                 const resumeContents = response.resume_contents;
                 const pdfResponse = await fetch("/api/generate",{
                     method:"POST",
                     body: JSON.stringify(resumeContents)
                 });
+                if (!pdfResponse.ok) {
+                    setIsError(true);
+                }
                 const blob = await pdfResponse.blob();
                 const url = window.URL.createObjectURL(blob);
                 setFile(url);
@@ -75,7 +86,8 @@ const InitialForm = ({
         })
     }
 
-    if (isPending) return "Generating ...";
+    if (isPending) return <Loading/>
+    if (isError) return <Error/>
     
     return (
         <form onSubmit={handleSubmit(submitHandler)} 

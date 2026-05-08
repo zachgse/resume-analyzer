@@ -6,6 +6,7 @@ import {
 import { Conversation } from './types';
 
 const GEMINI_API_KEY=process.env.GOOGLE_GEMINI_API_KEY
+const GEMINI_MODEL=process.env.GOOGLE_GEMINI_MODEL
 
 export async function gemini({
   message,
@@ -18,7 +19,7 @@ export async function gemini({
     apiKey: GEMINI_API_KEY,
   });
   const model = ai.chats.create({
-    model:'gemini-2.5-flash-lite',
+    model:GEMINI_MODEL!,
     history,
     config: {
     thinkingConfig: {
