@@ -63,12 +63,13 @@ const InitialForm = ({
                 const response = await fetch("/api/analyze/initial", {
                     method:"POST",
                     body: formData,
-                }).then(r => r.json());
+                });
                 if (!response.ok) {
                     setIsError(true);
                 }
-                const modelMessage = formatNewMessage({role:"model",text:response.message})
-                const resumeContents = response.resume_contents;
+                const result = await response.json();
+                const modelMessage = formatNewMessage({role:"model",text:result.message})
+                const resumeContents = result.resume_contents;
                 const pdfResponse = await fetch("/api/generate",{
                     method:"POST",
                     body: JSON.stringify(resumeContents)

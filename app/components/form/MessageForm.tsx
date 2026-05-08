@@ -59,11 +59,12 @@ const MessageForm = ({
         const response = await fetch("/api/analyze/continuous", {
             method:"POST",
             body: JSON.stringify(payload),
-        }).then(r => r.json());
+        });
         if (!response.ok) {
             setIsError(true);
         }
-        const modelMessage = formatNewMessage({role:"model",text:response.message})
+        const result = await response.json();
+        const modelMessage = formatNewMessage({role:"model",text:result.message})
         setConversation(prev=>[...prev,modelMessage]);
       })
     } catch (error) {
