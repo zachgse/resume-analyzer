@@ -1,7 +1,6 @@
-export default function Resume(){
+export const ResumeTemplate = () => {
     return (
-        <div className="bg-white text-black text-sm resume-text flex flex-col gap-6 p-16">
-            {/* personal information */}
+        <div className="bg-white text-black text-sm resume-text flex flex-col gap-2">
             <section className="flex flex-col items-center gap-2"> 
                 <p className="text-3xl font-bold">Zach Estrella</p>
                 <div className="flex justify-center gap-1">
@@ -18,10 +17,9 @@ export default function Resume(){
                     </a>
                 </div>
             </section>
-            {/* Summarry */}
             <section className="flex flex-col gap-2">
                 <p className="text-lg text-uppercase font-semibold">Summary</p>
-                <hr />
+                <hr className="border border-black"/>
                 <p className="text-justify text-sm/6">
                     Full-Stack Web Developer with a strong backend focus using PHP (Laravel), experienced in building scalable,
                     maintainable applications. Proficient in designing RESTful APIs, implementing secure authentication, and managing
@@ -31,10 +29,9 @@ export default function Resume(){
                     teams.
                 </p>
             </section>
-            {/* Experience */}
             <section className="flex flex-col gap-2">
                 <p className="text-lg text-uppercase font-semibold">Experience</p>
-                <hr />
+                <hr className="border border-black"/>
                 <div className="flex flex-col gap-1">
                     <div className="flex font-semibold">
                         <p className=" me-auto">Ziaplex Inc.</p>
@@ -64,10 +61,9 @@ export default function Resume(){
                     </ul>
                 </div>
             </section>
-            {/* Skills */}
             <section className="flex flex-col gap-2">
                 <p className="text-lg text-uppercase font-semibold">Skills</p>
-                <hr /> 
+                <hr className="border border-black"/>
                 <div className="flex flex-col gap-1">
                     <div className="flex gap-1">
                         <p className="font-semibold">Backend & Programming:</p>
@@ -90,12 +86,10 @@ export default function Resume(){
                         <p>Git (GitHub, Bitbucket), JIRA, Postman</p>
                     </div>
                 </div>
-
             </section>
-            {/* Education */}
             <section className="flex flex-col gap-2">
                 <p className="text-lg text-uppercase font-semibold">Education</p>
-                <hr />
+                <hr className="border border-black"/>
                 <div className="flex flex-col gap-1">
                     <div className="flex font-semibold">
                         <p className=" me-auto">De La Salle – College of Saint Benilde</p>
@@ -104,10 +98,9 @@ export default function Resume(){
                     <p>Web Developer</p>
                 </div>
             </section>
-            {/* Licenses */}
             <section className="flex flex-col gap-2">
                 <p className="text-lg text-uppercase font-semibold">Licenses and Certifications</p>
-                <hr />
+                <hr className="border border-black"/>
                 <div className="flex flex-col gap-1">
                     <div className="flex font-semibold">
                         <p className=" me-auto">AWS Practicioner</p>
@@ -122,12 +115,10 @@ export default function Resume(){
                     </div>
                     <p>Oracle</p>
                 </div>
-            
             </section>
-            {/* Projects */}
             <section className="flex flex-col gap-2">
                 <p className="text-lg text-uppercase font-semibold">Projects</p>
-                <hr />
+                <hr className="border border-black"/>
                 <div className="flex flex-col gap-1">
                     <div className="flex flex-col">
                         <p className="font-semibold">1. Sublime</p>
@@ -168,3 +159,4 @@ export default function Resume(){
         </div>
     )
 }
+

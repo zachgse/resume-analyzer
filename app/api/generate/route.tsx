@@ -2,6 +2,8 @@ import { generateResume } from "@/app/utils/helper";
 import Chromium from "@sparticuz/chromium";
 import { NextRequest, NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
+import { renderToString } from "react-dom/server.browser";
+import {ResumeTemplate}  from "@/lib/ResumeTemplate";
 
 export const runtime = "nodejs";
 
@@ -22,8 +24,8 @@ export async function POST (request:NextRequest) {
                         }
         browser = await puppeteer.launch(options);
         const page = await browser.newPage();
-        const componentHTML = generateResume();
-        
+        // const componentHTML = generateResume();
+        const componentHTML = renderToString(<ResumeTemplate/>)
         const html = `
             <html>
             <head>
