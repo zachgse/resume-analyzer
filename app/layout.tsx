@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
   title: "Resume Analyzer",
-  description: "Test gemini",
+  description: "AI-powered resume analyzer and ATS resume builder using Google's Gemini free-tier models. Design and developed by Zach Estrella.",
 };
 
 export default function RootLayout({
@@ -17,7 +17,10 @@ export default function RootLayout({
       lang="en"
       className={`antialiased`}
     >
-      <body className="min-h-full overflow-y-auto">{children}</body>
+      <body className="min-h-full overflow-y-auto">
+        {children}
+        <Footer/>
+      </body>
     </html>
   );
 }
