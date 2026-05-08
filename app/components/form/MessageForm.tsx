@@ -1,6 +1,6 @@
 "use client"
 
-import { SendHorizontal } from "lucide-react";
+import { File, SendHorizontal } from "lucide-react";
 import { Comment } from "react-loader-spinner";
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
@@ -8,21 +8,19 @@ import { ContinuousMessage, Conversation } from "@/app/utils/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { succeedingFrontend } from "@/app/utils/schema";
-import React from "react";
+import React, { useTransition } from "react";
 import { formatNewMessage } from "@/app/utils/helper";
 
 type MessageFormProps = {
+  file: string | undefined
   conversation: Conversation[]
   setConversation: React.Dispatch<React.SetStateAction<Conversation[]>>
-  startTransition: React.TransitionStartFunction
-  isPending: boolean
 }
 
 const MessageForm = ({
+  file,
   conversation,
-  setConversation,
-  startTransition,
-  isPending
+  setConversation
 }:MessageFormProps) => {
   const {
     reset,
@@ -32,6 +30,8 @@ const MessageForm = ({
   } = useForm({
     resolver: zodResolver(succeedingFrontend)
   });
+
+  const [isPending,startTransition] = useTransition();
 
   const submitHandler = (data:ContinuousMessage) => {
     reset();
@@ -48,7 +48,7 @@ const MessageForm = ({
             method:"POST",
             body: JSON.stringify(payload),
         }).then(r => r.json());
-        const modelMessage = formatNewMessage({role:"model",text:response.data})
+        const modelMessage = formatNewMessage({role:"model",text:response.message})
         setConversation(prev=>[...prev,modelMessage]);
       })
     } catch (error) {
@@ -75,6 +75,12 @@ const MessageForm = ({
               <ReactMarkdown>
                 {c.parts[0].text}
               </ReactMarkdown>
+              {file && index == 1 && (
+                <div className="flex items-end gap-2 mt-5">
+                  <File className="w-8 h-8"/>
+                  <a href={file} target="_blank" className="text-blue-500 underline">View Generated Resume</a>
+                </div>
+              )}
             </div>
           </div>
           ))}

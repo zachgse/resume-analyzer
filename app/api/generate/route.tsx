@@ -1,4 +1,3 @@
-import { generateResume } from "@/app/utils/helper";
 import Chromium from "@sparticuz/chromium";
 import { NextRequest, NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
@@ -10,7 +9,7 @@ export const runtime = "nodejs";
 const isLocal = process.env.NODE_ENV === 'development';
 
 export async function POST (request:NextRequest) {
-    let browser = null
+    let browser = null  
     try {
         const options = isLocal 
                         ? {
@@ -24,8 +23,8 @@ export async function POST (request:NextRequest) {
                         }
         browser = await puppeteer.launch(options);
         const page = await browser.newPage();
-        // const componentHTML = generateResume();
-        const componentHTML = renderToString(<ResumeTemplate/>)
+        const data = await request.json();
+        const componentHTML = renderToString(<ResumeTemplate props={data}/>) //add props
         const html = `
             <html>
             <head>
@@ -62,8 +61,6 @@ export async function POST (request:NextRequest) {
         await browser.close();
 
         const buffer = Buffer.from(pdf);
-
-        console.log("buffer is ",buffer);
 
         return new NextResponse(buffer, {
             headers: {

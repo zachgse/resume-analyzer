@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React, { useTransition } from "react";
 import clsx from "clsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,13 +10,13 @@ import { Conversation, InitialMessage } from "@/app/utils/types";
 import { formatInitialMessage, formatNewMessage } from "@/app/utils/helper";
 
 type InitialFormProps = {
+    setFile: React.Dispatch<React.SetStateAction<string|undefined>>
     setConversation: React.Dispatch<React.SetStateAction<Conversation[]>>
-    startTransition: React.TransitionStartFunction
 }
 
 const InitialForm = ({
+    setFile,
     setConversation,
-    startTransition
 }:InitialFormProps) => {
     const { 
         register,
@@ -26,7 +26,7 @@ const InitialForm = ({
     } = useForm({
         resolver: zodResolver(initialFrontend)
     })
-
+    const [isPending,startTransition] = useTransition();
     const [dragging,setDragging] = React.useState<boolean>(false);
     const [fileName,setFileName] = React.useState<string|null>("");
 
@@ -44,28 +44,38 @@ const InitialForm = ({
     }
 
     const submitHandler = (data:InitialMessage) => {
-        console.log("test`");
-        const initialMessage = formatInitialMessage({  // for backend to be sent to gemini
-                                    title:data.title,
-                                    jobDescription:data.jobDescription});
-        const userMessage = formatNewMessage({ role:"user",text:initialMessage }) // for ui display 
-        setConversation(prev => [...prev,userMessage]); // updating local state
         startTransition(async() => {
-            const formData = new FormData();
-            formData.append("message",initialMessage);
-            formData.append("resume",data.resume);
             try {
+                const initialMessage = formatInitialMessage({  // for backend to be sent to gemini
+                title:data.title,
+                jobDescription:data.jobDescription});
+                const userMessage = formatNewMessage({ role:"user",text:initialMessage }) // for ui display 
+                setConversation(prev => [...prev,userMessage]); // updating local state
+                const formData = new FormData();
+                formData.append("message",initialMessage);
+                formData.append("resume",data.resume);
                 const response = await fetch("/api/analyze/initial", {
                     method:"POST",
                     body: formData,
                 }).then(r => r.json());
-                const modelMessage = formatNewMessage({role:"model",text:response.data})
+                console.log("ai response: ", response);
+                const modelMessage = formatNewMessage({role:"model",text:response.message})
+                const resumeContents = response.resume_contents;
+                const pdfResponse = await fetch("/api/generate",{
+                    method:"POST",
+                    body: JSON.stringify(resumeContents)
+                });
+                const blob = await pdfResponse.blob();
+                const url = window.URL.createObjectURL(blob);
+                setFile(url);
                 setConversation(prev=>[...prev,modelMessage]);
             } catch (error) {
                 console.error(error);
             }
         })
     }
+
+    if (isPending) return "Generating ...";
     
     return (
         <form onSubmit={handleSubmit(submitHandler)} 
@@ -85,22 +95,6 @@ const InitialForm = ({
                         <p className="text-xs text-red-500 mt-1">{errors.title?.message}</p>
                     </div>
                 </div>
-                
-                {/* <div className="w-full flex items-start gap-4">
-                    <div className="w-1/5">
-                        <p className="break-words">Location</p>
-                    </div>
-                    <div className="w-4/5">
-                        <input {...register("location")}
-                            type="text" className={clsx("w-full h-12 border rounded-lg p-4",
-                                                    errors.location 
-                                                    ? "border-red-500 hover:border-red-500 focus:outline-red-500" 
-                                                    : "border-gray-300 hover:border-gray-300 focus:outline-gray-300"
-                            )}/>
-                        <p className="text-xs text-red-500 mt-1">{errors.location?.message}</p>
-                    </div>
-                </div> */}
-
             
                 <div className="w-full flex items-start gap-4">
                     <div className="w-1/5">

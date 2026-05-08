@@ -18,11 +18,11 @@ export async function gemini({
     apiKey: GEMINI_API_KEY,
   });
   const model = ai.chats.create({
-    model:'gemini-3-flash-preview',
+    model:'gemini-2.5-flash-lite',
     history,
     config: {
     thinkingConfig: {
-      thinkingLevel: ThinkingLevel.HIGH,
+      // thinkingLevel: ThinkingLevel.HIGH,
       includeThoughts: true,
     },
     responseMimeType: 'application/json',
@@ -32,42 +32,146 @@ export async function gemini({
       properties: {
         message: {
           type: Type.STRING,
-          description: "Conversational UI friendly message that gets rendered in the frontend explaining to the user what changed (e.g., 'I updated your experience section to be more results-oriented and metric based.')"
+          description: "If this is the first message, provide a brief intro. If the user is asking for a revision, provide the FULL revised text/section here using Markdown formatting so the user can use it immediately."
         },
         topic: {
           type: Type.STRING,
-          description: "brief description of what you and the user are talking about (e.g., Summary, Skills, Work History)"
+          description: "Brief description of what you and the user are talking about (e.g., Summary, Skills, Work History)"
         },
         resume_contents: {
-          type: Type.STRING,
-          description: "ONLY include this DURING the first user message based on history sent alongside with each request. The full, revised text of the resume in ATS format. This will be processed by the backend into a Word document and will not be shown directly in the chat window."
+          type: Type.OBJECT,
+          description: "ONLY populate this on the very first message. For all subsequent messages, return null.",
+          properties: {
+            name: { type: Type.STRING },
+            info: {
+              type: Type.ARRAY,
+              items: { type:Type.STRING },
+              description: "Contains location, contact number, email address, and personal website/portfolio (if there are)"
+            },
+            summary: { type: Type.STRING },
+            work_experience: {
+              type: Type.ARRAY, 
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  position: { type:Type.STRING },
+                  company: { type:Type.STRING },
+                  others: {
+                    type: Type.STRING,
+                    description: "Populate only if the user has included technical tools/software that they use on specific work experience"
+                  },
+                  date_start: { type:Type.STRING },
+                  date_end: { type:Type.STRING },
+                  highlights: { 
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING },
+                  }
+                }
+              }
+            },
+            skills: {
+              type: Type.OBJECT,
+              properties: {
+                categorized_skills: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.OBJECT,
+                    properties: {
+                      category: { type: Type.STRING },
+                      info: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    }
+                  }
+                },
+                flat_skills: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING }
+                }
+              },
+              description: "Populate EITHER categorized_skills OR flat_skills based on the input data."
+            },
+            education: {
+              type: Type.ARRAY, 
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  university: { type:Type.STRING },
+                  course: { type:Type.STRING },
+                  date: { 
+                    type:Type.STRING,
+                    description: "Just get the end date from the resume"
+                  },
+                }
+              }
+            },
+            licenses: {
+              type: Type.ARRAY, 
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type:Type.STRING },
+                  date_issued: { type:Type.STRING },
+                },
+                description: "Populate only if the user input has license/s section"
+              }
+            },
+            trainings: {
+              type: Type.ARRAY, 
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type:Type.STRING },
+                  date: { type:Type.STRING },
+                  location: { type:Type.STRING }
+                },
+                description: "Populate only if the user input has training/seminar section"
+              }
+            },
+            projects: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type:Type.STRING },
+                  tools: { type:Type.STRING },
+                  description: { type:Type.STRING }
+                }
+              },
+              description: "Populate only if the user input has project/s section"
+            }
+          },
+          required: ["name","info","summary","work_experience","skills","education"]
         },
       },
     },
-    systemInstruction: [
+        systemInstruction: [
         {
-          text: `You are a professional Hiring manager. The users will inquire and send their current resume (once as an initial message alongside with the job details they are seeking). The resume will be sent in text form via pdf to text converter. With that information, I want you to compare their current resume and align it with the job details they have sent. Upon receiving those information, I want you to generate an ATS format resume (via text) and extract all important things from their resume and add keywords,metrics, and special skillsets required for the job that they are seeking.  Also allow the user for further clarifications and revisions along the conversation history. Utilize third party resources to fully give a corporate standard generated resume (e.g. linkedin, jobstreet etc)
+          text: `
+            Role: You are an expert ATS (Applicant Tracking System) Specialist.
+            Objective: Transform raw text into high-impact, corporate-standard resumes and assist with iterative improvements.
 
-For the output, I expect 3 json output:
-1. topic(required) - brief description of what you and the user are talking about (e.g., Summary, Skills, Work History)
+            OPERATIONAL PROTOCOL:
+            1. INITIAL TURN:
+              - Populated the 'resume_contents' object with the extracted and enhanced data.
+              - Use the 'message' field for a brief professional greeting.
+              - Do not include the specific revisions you have made instead just specify the generic changes (e.g. I focused on fixing grammar..., focused on having metrics.. etc)
 
-2. message (required) - Conversational UI friendly message that gets rendered in the frontend explaining to the user what changed (e.g., 'I updated your experience section to be more results-oriented and metric based.').
+            2. SUBSEQUENT TURNS (The "Revision Phase"):
+              - STICK TO THE 'message' FIELD: Provide all revised content directly here. 
+              - FORMATTING: Use Markdown (headers, bullet points, bold text) to make the content copy-paste ready.
+              - OMIT 'resume_contents': Do not return the 'resume_contents' key. If your technical implementation requires it, return 'null' or an empty object {}. 
+              - DIRECTNESS: If a user asks to "revise the skills," your 'message' should contain the full, updated skills list immediately, not just a description of what you changed.
 
-3. resume_contents - ONLY include this DURING the first user message based on history sent alongside with each request. The full, revised text of the resume in ATS format. This will be processed by the backend into a Word document and will not be shown directly in the chat window.`,
+            3. DATA HYGIENE: 
+              - Silently fix PDF conversion artifacts (e.g., "soft-ware" -> "software").
+              - Inject quantifiable metrics and keywords based on the target Job Description.
+          `
         }
     ],
     }
   })
-
   const response = await model.sendMessage({ message });
 
-  console.log("response text in gemini: ", response.text);
-
   const parsed = JSON.parse(response.text as string);
-  console.log("response parsed in gemini: ", parsed);
-  console.log("parsed message in gemini: ", parsed.message);
-  console.log("parsed topic in gemini: ", parsed.topic);
-  console.log("parsed res content in gemini: ", parsed.resume_contents);
   return parsed;
 }
 

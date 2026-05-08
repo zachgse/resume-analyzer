@@ -12,19 +12,16 @@ export async function POST(request:NextRequest) {
         });
 
         if (!parsedData.success) return NextResponse.json({error: parsedData.error.issues},{status:400})
-
-
+            
         const { message,resume } = parsedData.data;
 
         const history = [formatNewMessage({role:"user",text:message})];
         const extractedResume = await extractTextFromResume(resume);
         const formattedMessage = `${message} **My current resume is:** ${extractedResume?.slice(0, 8000)}`; 
-        // return NextResponse.json({data:"hello"},{status:200});
-        const response = gemini({history,message:formattedMessage});
-
-        console.log("response in initial route: ", response);
+        const response = await gemini({history,message:formattedMessage});
         return NextResponse.json({
-            data: "Hello"
+            message: response.message,
+            resume_contents: response.resume_contents
         }, {
             status: 200
         });

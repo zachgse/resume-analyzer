@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST (request:NextRequest) {
     try {
         const data = await request.json();
-        console.log("data is ",data);
         const parsedData = succeedingBackend.safeParse({
             content: data.message,
             history: data.history
@@ -14,11 +13,11 @@ export async function POST (request:NextRequest) {
         if (!parsedData.success) return NextResponse.json({error: parsedData.error.issues},{status:400})
 
         const { content,history } = parsedData.data;
-        // return NextResponse.json({data:"hello"},{status:200});
         const response = gemini({history,message:content});
-        console.log("response in continuous route: ", response);
+        const result = await response;
+
         return NextResponse.json({
-            data:"Hello"
+            message: result.message
         }, {
             status: 200
         });
