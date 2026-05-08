@@ -6,7 +6,7 @@ export const ResumeTemplate = ({props}:{props:Resume}) => {
             <section className="flex flex-col items-center gap-2"> 
                 <p className="text-3xl font-bold">{props.name}</p>
                 {props.info && (
-                <div className="flex justify-center gap-4">
+                <div className="flex flex-wrap items-center justify-center gap-4">
                     {props.info.map((info,index)=>(
                         <p key={index}>{info}</p>
                     ))}
