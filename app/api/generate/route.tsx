@@ -6,6 +6,7 @@ import {ResumeTemplate}  from "@/lib/ResumeTemplate";
 export const runtime = "nodejs";
 
 const isLocal = process.env.NODE_ENV === 'development';
+const remoteExecutablePath = "https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar"
 
 export async function POST (request:NextRequest) {
     const Chromium = (await import("@sparticuz/chromium")).default;
@@ -18,7 +19,7 @@ export async function POST (request:NextRequest) {
                             headless: true
                         } : {
                             args: Chromium.args,
-                            executablePath: await Chromium.executablePath(),
+                            executablePath: await Chromium.executablePath(remoteExecutablePath),
                             headless: true
                         }
         browser = await puppeteer.launch(options);
