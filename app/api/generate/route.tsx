@@ -25,7 +25,7 @@ export async function POST (request:NextRequest) {
         browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         const data = await request.json();
-        const componentHTML = renderToString(<ResumeTemplate props={data}/>) //add props
+        const componentHTML = renderToString(<ResumeTemplate props={data}/>)
         const html = `
             <html>
             <head>
@@ -39,13 +39,14 @@ export async function POST (request:NextRequest) {
                 @page {
                     size: A4;
                     margin: 0;
-                    padding: 64px;
                 }
                 </style>
             </head>
 
             <body>
-                ${componentHTML}
+                <div class="px-14 py-10">
+                    ${componentHTML}
+                </div>
             </body>
             </html>
         `;

@@ -125,7 +125,7 @@ const MessageForm = ({
         </div>
       )}
 
-      <div className="w-full py-4 sticky bottom-0 bg-white md:px-0 px-4">
+      <div className="w-full py-4 sticky bottom-4 bg-white md:px-0 px-4">
         <div className="lg:w-3/5 md:w-4/5 w-full mx-auto">
           <form onSubmit={handleSubmit(submitHandler)}
             className="relative">
