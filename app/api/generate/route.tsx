@@ -1,4 +1,3 @@
-import Chromium from "@sparticuz/chromium";
 import { NextRequest, NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import { renderToString } from "react-dom/server.browser";
@@ -9,6 +8,7 @@ export const runtime = "nodejs";
 const isLocal = process.env.NODE_ENV === 'development';
 
 export async function POST (request:NextRequest) {
+    const Chromium = (await import("@sparticuz/chromium")).default;
     let browser = null  
     try {
         const options = isLocal 
