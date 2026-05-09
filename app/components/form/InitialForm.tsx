@@ -93,7 +93,7 @@ const InitialForm = ({
     return (
         <form onSubmit={handleSubmit(submitHandler)} 
             className="lg:w-3/5 md:w-4/5 w-full">
-            <p className="font-semibold text-gray-500 text-xs mb-12">Note: Fill up the fields to generate your AI-powered resume with Google Gemini model</p>
+            <p className="font-semibold text-gray-500 text-xs mb-12 md:mt-0 mt-12 md:p-0 p-4">Note: Fill up the fields to generate your AI-powered resume with Google Gemini model</p>
             <div className="grid md:grid-cols-2 grid-cols-1 md:gap-12 gap-4 md:p-0 p-4">
                 <div className="flex flex-col space-y-4">
                     <div className="w-full flex items-start gap-4">
