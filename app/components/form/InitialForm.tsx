@@ -92,15 +92,15 @@ const InitialForm = ({
     
     return (
         <form onSubmit={handleSubmit(submitHandler)} 
-            className="lg:w-3/5 md:w-4/5 w-full">
-            <p className="font-semibold text-gray-500 text-xs mb-12 md:mt-0 mt-12 md:p-0 p-4">Note: Fill up the fields to generate your AI-powered resume with Google Gemini model</p>
+            className="lg:w-3/5 md:w-4/5 w-full md:mb-0 mb-24">
+            <p className="font-semibold text-gray-500 text-xs my-4 md:p-0 p-4">Note: Fill up the fields to generate your AI-powered resume with Google Gemini model</p>
             <div className="grid md:grid-cols-2 grid-cols-1 md:gap-12 gap-4 md:p-0 p-4">
                 <div className="flex flex-col space-y-4">
-                    <div className="w-full flex items-start gap-4">
-                        <div className="w-1/5">
+                    <div className="w-full flex md:flex-row flex-col items-start md:gap-4 gap-0">
+                        <div className="md:w-1/5 w-full">
                             <p className="font-semibold break-words">Job Title</p>
                         </div>
-                        <div className="w-4/5">
+                        <div className="md:w-4/5 w-full">
                             <input {...register("title")}
                                 type="text" className={clsx("w-full h-12 border rounded-lg p-4",
                                                         errors.title 
@@ -111,11 +111,11 @@ const InitialForm = ({
                         </div>
                     </div>
                 
-                    <div className="w-full flex items-start gap-4">
-                        <div className="w-1/5">
+                    <div className="w-full flex md:flex-row flex-col items-start md:gap-4 gap-0">
+                        <div className="md:w-1/5 w-full">
                             <p className="font-semibold break-words">Job Description</p>
                         </div>
-                        <div className="w-4/5">
+                        <div className="md:w-4/5 w-full">
                             <textarea {...register("jobDescription")}
                                         className={clsx("w-full h-96 border rounded-lg p-4",
                                                         errors.jobDescription 
