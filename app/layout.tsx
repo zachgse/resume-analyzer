@@ -3,7 +3,7 @@ import "./globals.css";
 import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
-  title: "Resume Analyzer",
+  title: "Resume Generator",
   description: "AI-powered resume analyzer and ATS resume builder using Google's Gemini free-tier models. Design and developed by Zach Estrella.",
 };
 
