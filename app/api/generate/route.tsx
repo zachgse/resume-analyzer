@@ -32,13 +32,8 @@ export async function POST (request:NextRequest) {
                 <script src="https://cdn.tailwindcss.com"></script>
 
                 <style>
-                body {
-                    margin: 0;
-                }
-
                 @page {
                     size: A4;
-                    margin: 0;
                 }
                 </style>
             </head>
@@ -58,6 +53,12 @@ export async function POST (request:NextRequest) {
         const pdf = await page.pdf({
             format: "A4",
             printBackground: true,
+            margin: {
+                top: "20mm",
+                right: "15mm",
+                bottom: "20mm",
+                left: "15mm"
+            }
         });
 
         await browser.close();
